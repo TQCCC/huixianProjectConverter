@@ -1,0 +1,2 @@
+# huixianProjectConverter
+实习作业，用python编写的根据模板项目生成目标项目的工具
