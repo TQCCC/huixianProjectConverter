@@ -4,21 +4,34 @@ import codecs
 import sys
 import re
 
+tip = "py " + __file__ + " -src_project_keyword -target_project_keyword project_dir"
+
 if len(sys.argv) < 4:
     print("missing argument(s)!")
-    print("py " + __file__ + " -src_project_name -target_project_name -project_dir")
+    print(tip)
     sys.exit(0)
 
-origin = sys.argv[1].lower()
-target = sys.argv[2].lower()
+a_1=sys.argv[1]
+a_2=sys.argv[2]
+a_3=sys.argv[3]
+
+
+if not a_1.startswith("-") or not a_2.startswith("-"):
+    print('')
+    print(tip)
+    sys.exit(0)
+    pass
+
+origin = a_1.lower()[1:]
+target = a_2.lower()[1:]
 
 origin_head_upper = origin[0].upper() + origin[1:]
 target_head_upper = target[0].upper() + target[1:]
 
-project_name = sys.argv[3]
+project_dir = a_3
 
 try:
-    os.chdir("./" + project_name)
+    os.chdir("./" + project_dir)
 except:
     print("project_dir not found!")
     sys.exit(0)
