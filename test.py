@@ -1,5 +1,9 @@
 import os
 
-print("Test...")
+print("**********************************")
 
-os.rename("./testdir", "./ttt")
+try:
+    os.chdir("./aaa")
+except:
+    print("++++++++++")
+print("**********************************")
