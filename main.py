@@ -54,4 +54,4 @@ for root, dirs, files in os.walk(baseDir + "", topdown=False):
         oldname = name
         newname = oldname.replace("demo", "payment")
         if newname != oldname:
-            os.rename(totalPath, root + "\\" + name)
+            os.rename(totalPath, root + "\\" + newname)
