@@ -1,30 +1,15 @@
 import re
-import os
-import time
-import sys
-import subprocess
-import shutil
 
-print("********************************************")
+file = open('testground/test_pom.xml', 'r+')
+data = file.read()
+# <text>(.*)</text>
 
-# command_result = subprocess.getoutput("git remote -v")
-#
-# print(command_result)
-#
-# gitaddr = re.search("(http).*?(\.git)", command_result).group(0)
-#
-# print(gitaddr)
-#
-# os.chdir("./testdata")
-#
-# subprocess.getoutput("git clone %s" % (gitaddr))
+# print(data)
+print("*********************************************************")
+data = re.sub(r'(<artifactId>.*?</artifactId>)', "<artifactId>payment</artifactId>", data, 1)
+# data = re.sub(r'<name>.*?</name>', "<name>payment</name>", data, 0)
+# data = re.sub(r'<finalNamr>.*?</finalName>', "<name>payment</name>", data, 0)
 
-print(subprocess.getstatusoutput("dirasa"))
-# os.chdir("../../")
-# print(os.getcwd())
-#
-# print(sys.path[0])
-#
-# shutil.copytree("./testdata", "./testdata"+"_1")
-
-print("********************************************")
+file.write("\n*****************************************************\n")
+file.write(data)
+print("*********************************************************")

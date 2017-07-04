@@ -43,10 +43,12 @@ else:
 
 mode = a_4
 
-origin = a_1.lower()
-target = a_2.lower()
-origin_head_upper = origin[0].upper() + origin[1:]
-target_head_upper = target[0].upper() + target[1:]
+# origin = a_1.lower()
+# target = a_2.lower()
+origin = a_1
+target = a_2
+# origin_head_upper = origin[0].upper() + origin[1:]
+# target_head_upper = target[0].upper() + target[1:]
 
 project_dir = a_3
 
@@ -57,7 +59,7 @@ if os.path.exists("./" + project_dir) is False:
 
 def custom_replace_one_line_rule(line):
     # re.sub(r'demo', 'payment', line, re.IGNORECASE)
-    return line.replace(origin, target).replace(origin_head_upper, target_head_upper)
+    return line.replace(origin, target) # .replace(origin_head_upper, target_head_upper)
 
 
 def replace_content_line_by_line(file_path, rule):
@@ -79,9 +81,9 @@ def custom_file_rename_rule(path):
     if new_name != base_file:
         os.rename(path, "\\".join(arr[:len(arr) - 1]) + "\\" + new_name)
 
-    new_name = base_file.replace(origin_head_upper, target_head_upper)
-    if new_name != base_file:
-        os.rename(path, "\\".join(arr[:len(arr) - 1]) + "\\" + new_name)
+    # new_name = base_file.replace(origin_head_upper, target_head_upper)
+    # if new_name != base_file:
+    #     os.rename(path, "\\".join(arr[:len(arr) - 1]) + "\\" + new_name)
 
 
 def resolve(root_path="."):
@@ -101,6 +103,20 @@ def resolve(root_path="."):
             print(total_path)
 
             # TODO 合理处理Maven的pom.xml
+            if name == "pom.xml":
+
+                file = open(total_path, 'r+')
+                data = file.read()
+                data = re.sub(r'<artifactId>.*?</artifactId>', "<artifactId>" + target + "</artifactId>", data, 1)
+                data = re.sub(r'<name>.*?</name>', "<name>"+target+"</name>", data, 1)
+                data = re.sub(r'<finalName>.*?</finalName>', "<finalName>"+target+"</finalName>", data, 1)
+
+                file.seek(0)
+                file.write(data)
+
+                file.close()
+
+                # continue
 
             # modify file content
             replace_content_line_by_line(total_path, custom_replace_one_line_rule)
@@ -144,7 +160,7 @@ def git_mode():
 
 
 def simple_mode():
-    print("Start resolving.......")
+    print("Start resolving.......simple mode")
 
     arr = re.split(r'/|\\', project_dir)  # 适配linux和windows的不同目录分隔符
 
