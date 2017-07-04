@@ -6,10 +6,14 @@ data = file.read()
 
 # print(data)
 print("*********************************************************")
-data = re.sub(r'(<artifactId>.*?</artifactId>)', "<artifactId>payment</artifactId>", data, 1)
-# data = re.sub(r'<name>.*?</name>', "<name>payment</name>", data, 0)
-# data = re.sub(r'<finalNamr>.*?</finalName>', "<name>payment</name>", data, 0)
+data = re.sub('<artifactId>.*?</artifactId>', "<artifactId>payment</artifactId>", data, 1)
+data = re.sub('<name>.*?</name>', "<name>payment</name>", data, 1)
+data = re.sub('<finalName>.*?</finalName>', "<finalName>payment</finalName>", data, 1)
 
-file.write("\n*****************************************************\n")
+
+file.seek(0)
+file.truncate()
 file.write(data)
+
+file.close()
 print("*********************************************************")
