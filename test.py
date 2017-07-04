@@ -19,12 +19,12 @@ print("********************************************")
 #
 # subprocess.getoutput("git clone %s" % (gitaddr))
 
-print(type(subprocess.getstatusoutput("dir")[1]))
+print(subprocess.getstatusoutput("dirasa"))
 # os.chdir("../../")
 # print(os.getcwd())
-
-print(sys.path[0])
-
-shutil.copytree("./testdata", "./testdata"+"_1")
+#
+# print(sys.path[0])
+#
+# shutil.copytree("./testdata", "./testdata"+"_1")
 
 print("********************************************")
