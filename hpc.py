@@ -8,27 +8,19 @@ import sys
 # TODO 可以删除无关文件夹，如IDE、git生成的等等
 
 
-tip = "py " + __file__ + " -src_project_keyword -target_project_keyword project_dir"
+tip = "py " + __file__ + " src_project_keyword target_project_keyword project_dir"
 
 if len(sys.argv) < 4:
     print("missing argument(s)!")
     print(tip)
     sys.exit(0)
 
-a_1=sys.argv[1]
-a_2=sys.argv[2]
-a_3=sys.argv[3]
+a_1 = sys.argv[1]
+a_2 = sys.argv[2]
+a_3 = sys.argv[3]
 
-
-if not a_1.startswith("-") or not a_2.startswith("-"):
-    print('')
-    print(tip)
-    sys.exit(0)
-    pass
-
-origin = a_1.lower()[1:]
-target = a_2.lower()[1:]
-
+origin = a_1.lower()
+target = a_2.lower()
 origin_head_upper = origin[0].upper() + origin[1:]
 target_head_upper = target[0].upper() + target[1:]
 
@@ -37,7 +29,7 @@ project_dir = a_3
 try:
     os.chdir("./" + project_dir)
 except:
-    print("project_dir not found!")
+    print("project_dir: %s not found!" % (a_3))
     sys.exit(0)
 
 
