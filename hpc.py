@@ -2,7 +2,11 @@
 import os
 import codecs
 import sys
-import re
+
+# import re
+# TODO 生成另一份新项目，而不是直接修改原来项目内容，思路：可以巧妙调用git命令
+# TODO 可以删除无关文件夹，如IDE、git生成的等等
+
 
 if len(sys.argv) < 4:
     print("missing argument(s)!")
@@ -25,7 +29,6 @@ except:
 
 
 def custom_rule(line):
-
     # re.sub(r'demo', 'payment', line, re.IGNORECASE)
 
     return line.replace(origin, target).replace(origin_head_upper, target_head_upper)
