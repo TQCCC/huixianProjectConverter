@@ -7,6 +7,7 @@ import re
 import shutil
 
 # TODO 可以删除/忽略无关文件夹，如IDE的配置文件、以及git的.git等等
+# TODO 合理处理Maven的pom.xml
 
 
 tip = "Wrong command\n" \
@@ -40,8 +41,6 @@ if len(sys.argv) == 5:
 else:
     a_4 = "-s"
 
-print(a_4)
-
 mode = a_4
 
 origin = a_1.lower()
@@ -56,7 +55,7 @@ if os.path.exists("./" + project_dir) is False:
     sys.exit(0)
 
 
-def custom_replace_rule(line):
+def custom_replace_one_line_rule(line):
     # re.sub(r'demo', 'payment', line, re.IGNORECASE)
     return line.replace(origin, target).replace(origin_head_upper, target_head_upper)
 
@@ -71,7 +70,7 @@ def replace_content_line_by_line(file_path, rule):
         file.write(newline)
 
 
-def custom_rename_rule(path):
+def custom_file_rename_rule(path):
     # 用反斜杠来分割路径，迎合Windows
     arr = path.split("\\")
     base_file = arr[len(arr) - 1]
@@ -97,15 +96,17 @@ def resolve(root_path="."):
             continue
 
         for name in files:
-            # if not name.startswith(dot):
+
             total_path = root + "\\" + name
             print(total_path)
 
+            # TODO 合理处理Maven的pom.xml
+
             # modify file content
-            replace_content_line_by_line(total_path, custom_replace_rule)
+            replace_content_line_by_line(total_path, custom_replace_one_line_rule)
 
             # modify filename
-            custom_rename_rule(total_path)
+            custom_file_rename_rule(total_path)
 
         print("++++++dirs below++++++")
         for name in dirs:
@@ -114,7 +115,7 @@ def resolve(root_path="."):
             print(total_path)
 
             # modify dirname
-            custom_rename_rule(total_path)
+            custom_file_rename_rule(total_path)
 
 
 def git_mode():
@@ -138,7 +139,6 @@ def git_mode():
     if command_result[0] == 1:
         print(command_result[1])
         sys.exit(0)
-    print(command_result[1])
 
     resolve(project_new_name)
 
@@ -146,12 +146,13 @@ def git_mode():
 def simple_mode():
     print("Start resolving.......")
 
-    arr = project_dir.split("/")
+    arr = re.split(r'/|\\', project_dir)  # 适配linux和windows的不同目录分隔符
 
+    # 用户没有输入最后一个分隔符的情况
     if arr[len(arr) - 1] == '':
-        project_dir_new = "/".join(arr[:len(arr) - 2]) + "/" + target  # linux
+        project_dir_new = "/".join(arr[:len(arr) - 2]) + "/" + target
     else:
-        project_dir_new = "/".join(arr[:len(arr) - 1]) + "/" + target  # windows
+        project_dir_new = "/".join(arr[:len(arr) - 1]) + "/" + target
 
     shutil.copytree(project_dir, project_dir_new)
     resolve(project_dir_new)
