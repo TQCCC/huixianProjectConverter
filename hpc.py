@@ -147,14 +147,16 @@ def resolve(root_path="."):
 
 
 def git_mode():
-    print("this project has a git root, clone from the remote repository......")
+    print("this project has a git root, cloning from the remote repository......")
 
     os.chdir("./" + project_dir)
 
     command_result = subprocess.getstatusoutput("git remote -v")
     if command_result[0] == 1:
         print(command_result[1])
+        print("clone failed or not a git root? You can try simple mode, type -s at the end.")
         sys.exit(0)
+
     print(command_result[1])
     git_address = re.search("http.*?\.git", command_result[1]).group(0)
 

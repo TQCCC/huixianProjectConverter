@@ -34,9 +34,10 @@ print("*********************************************************")
 # print(platform.system())
 #
 # print(type(platform.system()))
-string = "origin  http://gitlab.julanling.com/java/huixian-demo.git (fetch)" \
-         "origin  http://gitlab.julanling.com/java/huixian-demo.git (push)"
+# string = "origin  http://gitlab.julanling.com/java/huixian-demo.git (fetch)" \
+#          "origin  http://gitlab.julanling.com/java/huixian-demo.git (push)"
+#
+# print(re.search("http.*?\.git", string).group())
 
-print(re.search("http.*?\.git", string).group())
 
 print("*********************************************************")
