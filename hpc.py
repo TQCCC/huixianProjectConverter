@@ -7,7 +7,6 @@ import re
 import shutil
 
 # TODO 可以删除/忽略无关文件夹，如IDE的配置文件、以及git的.git等等
-# TODO 合理处理Maven的pom.xml
 
 
 tip = "Wrong command\n" \
@@ -41,49 +40,61 @@ if len(sys.argv) == 5:
 else:
     a_4 = "-s"
 
-mode = a_4
-
-# origin = a_1.lower()
-# target = a_2.lower()
 origin = a_1
 target = a_2
-# origin_head_upper = origin[0].upper() + origin[1:]
-# target_head_upper = target[0].upper() + target[1:]
 
 project_dir = a_3
+
+mode = a_4
 
 if os.path.exists("./" + project_dir) is False:
     print("project_dir: %s not found!" % (a_3))
     sys.exit(0)
 
 
-def custom_replace_one_line_rule(line):
-    # re.sub(r'demo', 'payment', line, re.IGNORECASE)
-    return line.replace(origin, target)  # .replace(origin_head_upper, target_head_upper)
+def get_base_file_name(path):
+    arr = re.split(r'/|\\', path)
+    return arr[len(arr) - 1]
 
 
-def replace_content_line_by_line(file_path, rule):
-    file = codecs.open(file_path, 'r+', 'utf-8', 'ignore')
-    lines = file.readlines()
+def custom_data_rule(data, file):
+    new_data = data
+
+    # 合理处理Maven的pom.xml
+    if get_base_file_name(file.name) == "pom.xml":
+        new_data = re.sub(r'<artifactId>.*?</artifactId>', "<artifactId>" + target + "</artifactId>", new_data, 1)
+        new_data = re.sub(r'<name>.*?</name>', "<name>" + target + "</name>", new_data, 1)
+        new_data = re.sub(r'<finalName>.*?</finalName>', "<finalName>" + target + "</finalName>", new_data, 1)
+
+    new_data = re.sub(origin, target, new_data)
+
+    return new_data
+
+
+def custom_rename_rule(old_name):
+    new_name = old_name.replace(origin, target)
+    return new_name
+
+
+def resolve_file_content(path, rule):
+    file = codecs.open(path, 'r+', 'utf-8', 'ignore')
+    data = file.read()
+
+    new_data = rule(data, file)
+
     file.seek(0)
+    file.truncate()
+    file.write(new_data)
+    file.close()
 
-    for line in lines:
-        newline = rule(line)
-        file.write(newline)
 
+def resolve_file_or_dir_name(path, old_name, rename_rule):
+    arr = re.split(r'/|\\', path)
 
-def custom_file_rename_rule(path):
-    # 用反斜杠来分割路径，迎合Windows
-    arr = path.split("\\")
-    base_file = arr[len(arr) - 1]
-
-    new_name = base_file.replace(origin, target)
-    if new_name != base_file:
+    new_name = rename_rule(old_name)
+    if new_name != old_name:
         os.rename(path, "\\".join(arr[:len(arr) - 1]) + "\\" + new_name)
-
-        # new_name = base_file.replace(origin_head_upper, target_head_upper)
-        # if new_name != base_file:
-        #     os.rename(path, "\\".join(arr[:len(arr) - 1]) + "\\" + new_name)
+    return
 
 
 def resolve(root_path="."):
@@ -98,40 +109,22 @@ def resolve(root_path="."):
             continue
 
         for name in files:
-
-            total_path = root + "\\" + name
-            print(total_path)
-
-            # TODO 合理处理Maven的pom.xml
-            if name == "pom.xml":
-                file = open(total_path, 'r+')
-                data = file.read()
-                data = re.sub(r'<artifactId>.*?</artifactId>', "<artifactId>" + target + "</artifactId>", data, 1)
-                data = re.sub(r'<name>.*?</name>', "<name>" + target + "</name>", data, 1)
-                data = re.sub(r'<finalName>.*?</finalName>', "<finalName>" + target + "</finalName>", data, 1)
-
-                file.seek(0)
-                file.truncate()
-                file.write(data)
-
-                file.close()
-
-                # continue
+            path = root + "\\" + name
+            print(path)
 
             # modify file content
-            replace_content_line_by_line(total_path, custom_replace_one_line_rule)
+            resolve_file_content(path, custom_data_rule)
 
             # modify filename
-            custom_file_rename_rule(total_path)
+            resolve_file_or_dir_name(path, name, custom_rename_rule)
 
         print("++++++dirs below++++++")
         for name in dirs:
-            # if not name.startswith(dot):
-            total_path = root + "\\" + name
-            print(total_path)
+            path = root + "\\" + name
+            print(path)
 
-            # modify dirname
-            custom_file_rename_rule(total_path)
+            # modify directory_name
+            resolve_file_or_dir_name(path, name, custom_rename_rule)
 
 
 def git_mode():
@@ -144,14 +137,14 @@ def git_mode():
         print(command_result[1])
         sys.exit(0)
     print(command_result[1])
-    gitaddr = re.search("(http).*?(\.git)", command_result[1]).group(0)
+    git_address = re.search("(http).*?(\.git)", command_result[1]).group(0)
 
     os.chdir("../")
 
     project_new_name = target
     print(project_new_name)
 
-    command_result = subprocess.getstatusoutput("git clone %s %s" % (gitaddr, project_new_name))
+    command_result = subprocess.getstatusoutput("git clone %s %s" % (git_address, project_new_name))
     if command_result[0] == 1:
         print(command_result[1])
         sys.exit(0)
@@ -162,7 +155,8 @@ def git_mode():
 def simple_mode():
     print("Start resolving.......simple mode")
 
-    arr = re.split(r'/|\\', project_dir)  # 适配linux和windows的不同目录分隔符
+    # 适配linux和windows的不同目录分隔符
+    arr = re.split(r'/|\\', project_dir)
 
     # 用户没有输入最后一个分隔符的情况
     if arr[len(arr) - 1] == '':
