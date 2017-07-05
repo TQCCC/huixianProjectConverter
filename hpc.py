@@ -5,6 +5,8 @@ import sys
 import subprocess
 import re
 import shutil
+import platform
+
 
 # TODO 可以删除/忽略无关文件夹，如IDE的配置文件、以及git的.git等等
 
@@ -47,6 +49,12 @@ project_dir = a_3
 
 mode = a_4
 
+separator = "/"
+if platform.system() == "Windows":
+    separator = "\\"
+else:
+    separator = "/"
+
 if os.path.exists("./" + project_dir) is False:
     print("project_dir: %s not found!" % (a_3))
     sys.exit(0)
@@ -60,7 +68,7 @@ def get_base_file_name(path):
 def custom_data_rule(data, file):
     new_data = data
 
-    # 合理处理Maven的pom.xml
+    # 处理Maven的pom.xml
     if get_base_file_name(file.name) == "pom.xml":
         new_data = re.sub(r'<artifactId>.*?</artifactId>', "<artifactId>" + target + "</artifactId>", new_data, 1)
         new_data = re.sub(r'<name>.*?</name>', "<name>" + target + "</name>", new_data, 1)
@@ -93,7 +101,7 @@ def resolve_file_or_dir_name(path, old_name, rename_rule):
 
     new_name = rename_rule(old_name)
     if new_name != old_name:
-        os.rename(path, "\\".join(arr[:len(arr) - 1]) + "\\" + new_name)
+        os.rename(path, separator.join(arr[:len(arr) - 1]) + separator + new_name)
     return
 
 
@@ -103,13 +111,13 @@ def resolve(root_path="."):
         print("STEP: %d************RESOLVING DIR: %s************" % (i, root))
         i += 1
 
-        # ignore git
+        # ignore git 多个或条件是因为考虑到适配windows和linux路径分隔符的不同
         if root.find("\\.git\\") != -1 or root.find("/.git\\") != -1 or root.endswith("\\.git"):
             print("files in .git should not be modified.")
             continue
 
         for name in files:
-            path = root + "\\" + name
+            path = root + separator + name
             print(path)
 
             # modify file content
@@ -120,7 +128,7 @@ def resolve(root_path="."):
 
         print("++++++dirs below++++++")
         for name in dirs:
-            path = root + "\\" + name
+            path = root + separator + name
             print(path)
 
             # modify directory_name
@@ -160,9 +168,9 @@ def simple_mode():
 
     # 用户没有输入最后一个分隔符的情况
     if arr[len(arr) - 1] == '':
-        project_dir_new = "/".join(arr[:len(arr) - 2]) + "/" + target
+        project_dir_new = separator.join(arr[:len(arr) - 2]) + separator + target
     else:
-        project_dir_new = "/".join(arr[:len(arr) - 1]) + "/" + target
+        project_dir_new = separator.join(arr[:len(arr) - 1]) + separator + target
 
     shutil.copytree(project_dir, project_dir_new)
     resolve(project_dir_new)
