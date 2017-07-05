@@ -66,6 +66,13 @@ def get_base_file_name(path):
 
 
 def custom_data_rule(data, file):
+    """
+
+    :param data:
+    :param file:
+    :return: new data you want.
+    """
+
     new_data = data
 
     # 处理Maven的pom.xml
@@ -80,6 +87,10 @@ def custom_data_rule(data, file):
 
 
 def custom_rename_rule(old_name):
+    """
+    :param old_name:
+    :return: return a new name you want.
+    """
     new_name = old_name.replace(origin, target)
     return new_name
 
@@ -145,7 +156,7 @@ def git_mode():
         print(command_result[1])
         sys.exit(0)
     print(command_result[1])
-    git_address = re.search("(http).*?(\.git)", command_result[1]).group(0)
+    git_address = re.search("http.*?\.git", command_result[1]).group(0)
 
     os.chdir("../")
 
@@ -161,6 +172,7 @@ def git_mode():
 
 
 def simple_mode():
+
     print("Start resolving.......simple mode")
 
     # 适配linux和windows的不同目录分隔符

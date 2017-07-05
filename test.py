@@ -1,5 +1,4 @@
-# import re
-
+import re
 
 print("*********************************************************")
 
@@ -29,11 +28,15 @@ print("*********************************************************")
 # print(get_base_file_name(file.name))
 #
 # file.close()
+#
+# import platform
+#
+# print(platform.system())
+#
+# print(type(platform.system()))
+string = "origin  http://gitlab.julanling.com/java/huixian-demo.git (fetch)" \
+         "origin  http://gitlab.julanling.com/java/huixian-demo.git (push)"
 
-import platform
-
-print(platform.system())
-
-print(type(platform.system()))
+print(re.search("http.*?\.git", string).group())
 
 print("*********************************************************")
