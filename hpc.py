@@ -7,7 +7,6 @@ import re
 import shutil
 import platform
 
-
 # TODO 可以删除/忽略无关文件夹，如IDE的配置文件、以及git的.git等等
 
 
@@ -67,6 +66,11 @@ def get_base_file_name(path):
 
 def custom_data_rule(data, file):
     """
+    在文件内容中，项目关键字可能的情况
+
+    全小写：demo
+    全大写：DEMO
+    一般，既有大写也有小写：Demo、deMo
 
     :param data:
     :param file:
@@ -81,7 +85,14 @@ def custom_data_rule(data, file):
         new_data = re.sub(r'<name>.*?</name>', "<name>" + target + "</name>", new_data, 1)
         new_data = re.sub(r'<finalName>.*?</finalName>', "<finalName>" + target + "</finalName>", new_data, 1)
 
+    # TODO 考虑周全
     new_data = re.sub(origin, target, new_data)
+    new_data = re.sub(origin.upper(), target.upper(), new_data)
+
+    origin_head_upper = origin[0].upper() + origin[1:]
+    target_head_upper = target[0].upper() + target[1:]
+
+    new_data = re.sub(origin_head_upper, target_head_upper, new_data)
 
     return new_data
 
@@ -113,10 +124,9 @@ def resolve_file_or_dir_name(path, old_name, rename_rule):
     new_name = rename_rule(old_name)
     if new_name != old_name:
         os.rename(path, separator.join(arr[:len(arr) - 1]) + separator + new_name)
-    return
 
 
-def resolve(root_path="."):
+def resolve(data_rule, rename_rule, root_path="."):
     i = 0
     for root, dirs, files in os.walk(root_path, topdown=False):
         print("STEP: %d************RESOLVING DIR: %s************" % (i, root))
@@ -132,10 +142,10 @@ def resolve(root_path="."):
             print(path)
 
             # modify file content
-            resolve_file_content(path, custom_data_rule)
+            resolve_file_content(path, data_rule)
 
             # modify filename
-            resolve_file_or_dir_name(path, name, custom_rename_rule)
+            resolve_file_or_dir_name(path, name, rename_rule)
 
         print("++++++dirs below++++++")
         for name in dirs:
@@ -143,7 +153,7 @@ def resolve(root_path="."):
             print(path)
 
             # modify directory_name
-            resolve_file_or_dir_name(path, name, custom_rename_rule)
+            resolve_file_or_dir_name(path, name, rename_rule)
 
 
 def git_mode():
@@ -170,11 +180,10 @@ def git_mode():
         print(command_result[1])
         sys.exit(0)
 
-    resolve(project_new_name)
+    resolve(custom_data_rule, custom_rename_rule, project_new_name)
 
 
 def simple_mode():
-
     print("Start resolving.......simple mode")
 
     # 适配linux和windows的不同目录分隔符
@@ -187,7 +196,7 @@ def simple_mode():
         project_dir_new = separator.join(arr[:len(arr) - 1]) + separator + target
 
     shutil.copytree(project_dir, project_dir_new)
-    resolve(project_dir_new)
+    resolve(custom_data_rule, custom_rename_rule, project_dir_new)
 
 
 if mode == "-s":
