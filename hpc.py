@@ -25,10 +25,6 @@ if len(sys.argv) < 4:
     print("missing argument(s)!")
     print(tip)
     sys.exit(0)
-elif len(sys.argv) > 5:
-    print("too many arguments!")
-    print(tip)
-    sys.exit(0)
 
 a_1 = sys.argv[1]
 a_2 = sys.argv[2]
@@ -85,8 +81,9 @@ def custom_data_rule(data, file):
         new_data = re.sub(r'<name>.*?</name>', "<name>" + target + "</name>", new_data, 1)
         new_data = re.sub(r'<finalName>.*?</finalName>', "<finalName>" + target + "</finalName>", new_data, 1)
 
-    # TODO 考虑周全
+    # 一般替换以及全大写和以及首字母大写，三种常见情况
     new_data = re.sub(origin, target, new_data)
+
     new_data = re.sub(origin.upper(), target.upper(), new_data)
 
     origin_head_upper = origin[0].upper() + origin[1:]
