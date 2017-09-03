@@ -1,14 +1,14 @@
-﻿# huixianProjectConverter
-实习作业，根据模板项目生成目标项目的python程序
+﻿# project-converter
+实习作业，根据模板项目生成目标项目的python程序 <br>
 <h2>
-      Usage:<br>
-  		py <br>
-  		hpc.py <br>
-        source_project_keyword<br>
-        target_project_keyword<br>
-        project_dir <br>
-        [-g|-s]: <br>
-           -g:if it is a git project, a new project will be cloned from the remote repository under the same directory of the source project  .<br>
-           -s:generate a new project under the same directory of the source project.<br>
+使用方法：
+环境：python3.3.6 <br>
+
+命令： <br>
+#py hpc.py <br>
+		<原始项目关键字如demo> <br> 
+		<生成项目关键字如my-project> <br>
+		<生成目标路径> <br>
+		<-g 可选，是否来自git，-g:从原始项目git仓库拉取最新代码再生成目标项目> <br>
 </h2>
 
