@@ -11,7 +11,7 @@
 
 <h4>
 使用方法：
-环境：python3.3.6 <br>
+环境：python3 <br>
 
 命令： <br>
 #py hpc.py <br>
